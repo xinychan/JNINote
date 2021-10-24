@@ -1,0 +1,59 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.example.hellojni3"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // TODO 004--过滤CMake编译时CPU架构的库文件，减少apk的体积
+        externalNativeBuild {
+            cmake {
+                // cppFlags "" 默认CMake中会编译所有CPU架构的库文件
+                // cppFlags ""
+                // 限制CMake中只编译指定CPU架构的库文件；当前只在x86模拟器上运行
+                abiFilters "x86"
+            }
+        }
+
+        // TODO 005--过滤编译apk时打包的CPU架构库文件，减少apk的体积
+        // 指定编译某CPU架构的so库到apk；当前只在x86模拟器上运行
+        ndk {
+            abiFilters "x86"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // TODO 006--导入 FMOD 模块的jar包
+    implementation files("libs\\fmod.jar")
+}
